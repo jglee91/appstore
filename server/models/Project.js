@@ -2,7 +2,11 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const companySchema = new Schema({
+const projectSchema = new Schema({
+  company: {
+    type: Schema.Types.ObjectId,
+    ref: 'Company',
+  },
   name: {
     type: String,
     required: true,
@@ -13,6 +17,14 @@ const companySchema = new Schema({
     unique: 1,
     uppercase: true,
   },
+  serviceType: {
+    Type: String,
+    enum: ['b2b', 'b2c'],
+  },
+  svnUrl: {
+    type: String,
+    required: true,
+  },
   creator: {
     type: String,
     required: true,
@@ -21,4 +33,4 @@ const companySchema = new Schema({
   timestamps: true,
 });
 
-module.exports = mongoose.model('Company', companySchema);
+module.exports = mongoose.model('Project', projectSchema);
