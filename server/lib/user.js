@@ -9,7 +9,7 @@ function decryptPassword(req, res, next) {
 }
 
 function generateToken(payload, done) {
-  jwt.sign(payload, config.SECRET_KEY, { expiresIn: '7d' }, (err, token) => {
+  jwt.sign(payload, config.SECRET_KEY, { expiresIn: '1d' }, (err, token) => {
     done(err, token);
   });
 }

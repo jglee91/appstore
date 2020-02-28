@@ -42,7 +42,7 @@ function Login(props) {
     setIsAuthenticating(true);
 
     try {
-      await props.UserActions.doLogin({ id, password });
+      await props.UserActions.fetchLogin({ id, password });
     } catch (err) {
       setIsAuthenticating(false);
       setOpenAlert(true);
