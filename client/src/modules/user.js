@@ -3,31 +3,27 @@ import axios from 'axios';
 import crypto from 'crypto-js';
 import config from '../config';
 
-const LOGIN_USER = 'user/LOGIN_USER';
-const AUTH_USER = 'user/AUTH_USER';
+const LOGIN = 'user/LOGIN';
+const AUTH = 'user/AUTH';
 
-export const loginUser = createAction(LOGIN_USER);
-export const authUser = createAction(AUTH_USER);
+export const login = createAction(LOGIN);
+export const auth = createAction(AUTH);
 
-export const asyncLoginUser = (userInfo) => async (dispatch) => {
-  try {
-    const { id, password } = userInfo;
-    const data = {
-      id,
-      password: crypto.AES.encrypt(password, config.SECRET_KEY).toString(),
-    };
-    const response = await axios.post(`${config.API_SERVER}/api/user/login`, data);
-    dispatch(loginUser(response));
-  } catch (err) {
-    console.log(err);
-    dispatch(loginUser(err));
-  }
+export const doLogin = (userInfo) => async (dispatch) => {
+  const { id, password } = userInfo;
+  const data = {
+    id,
+    password: crypto.AES.encrypt(password, config.SECRET_KEY).toString(),
+  };
+  const response = await axios.post(`${config.API_SERVER}/api/user/login`, data);
+  localStorage.setItem('token', response.data.token);
+  dispatch(login(response));
 };
-export const asyncAuthUser = () => async (dispatch) => {
+export const doAuth = () => async (dispatch) => {
   try {
     // FIXME 하드코딩
     const response = await axios.post('http://localhost:5000/api/user/auth');
-    dispatch(authUser(response));
+    dispatch(auth(response));
   } catch (err) {
     console.error(err);
   }
@@ -36,8 +32,8 @@ export const asyncAuthUser = () => async (dispatch) => {
 const initialState = {};
 
 export default handleActions({
-  [LOGIN_USER]: (state, action) => ({
+  [LOGIN]: (state, action) => ({
     ...state,
-    ...action.payload.data,
+    ...action.payload.data.user,
   }),
 }, initialState);

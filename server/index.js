@@ -30,6 +30,7 @@ app.use('/api/company', require('./routes/company'));
 mongoose.connect(config.DATABASE_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  useCreateIndex: true,
 });
 app.use(httpMiddleware.notFound);
 app.use(httpMiddleware.errorHandler);

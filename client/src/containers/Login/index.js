@@ -1,5 +1,4 @@
-import React, { useState, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState, useRef, Fragment } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { TextField } from '@material-ui/core';
 import { bindActionCreators } from 'redux';
@@ -18,7 +17,6 @@ const useStyles = makeStyles({
 
 function Login(props) {
   const classes = useStyles();
-  const history = useHistory();
 
   const loginForm = useRef(null);
   const [isIDError, setIsIDError] = useState(false);
@@ -26,7 +24,7 @@ function Login(props) {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     const id = loginForm.current.id.value.trim();
     const password = loginForm.current.password.value;
 
@@ -43,34 +41,24 @@ function Login(props) {
     setIsPWDError(false);
     setIsAuthenticating(true);
 
-    props.UserActions.asyncLoginUser({ id, password }).then((response) => {
-      console.log(response);
-    }).catch((err) => {
-      console.log(err);
-    }).finally(() => {
+    try {
+      await props.UserActions.doLogin({ id, password });
+    } catch (err) {
       setIsAuthenticating(false);
-    });
-
-    // try {
-    //   setIsAuthenticating(true);
-
-    //   await props.UserActions.asyncLoginUser({ id, password });
-
-    //   history.push('/list');
-    // } catch (err) {
-    //   setOpenAlert(true);
-    // } finally {
-    //   setIsAuthenticating(false);
-    // }
+      setOpenAlert(true);
+    }
   };
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       handleLogin();
     }
   };
+  const handleAlertClose = () => {
+    setOpenAlert(false);
+  };
 
   return (
-    <>
+    <Fragment>
       <form className={classes.root} autoComplete="off" ref={loginForm}>
         <TextField
           name="id"
@@ -95,8 +83,8 @@ function Login(props) {
           loading={isAuthenticating}
         />
       </form>
-      <Alert open={openAlert} content="로그인에 실패했습니다. 계정정보를 확인해주세요." />
-    </>
+      {openAlert && <Alert content="로그인에 실패했습니다. 계정정보를 확인해주세요." handleClose={handleAlertClose} />}
+    </Fragment>
   );
 }
 

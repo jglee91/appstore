@@ -12,14 +12,14 @@ module.exports = () => {
       bindDN: LDAP.BIND_DN,
       bindCredentials: LDAP.BIND_CREDENTIALS,
       searchBase: LDAP.SEARCH_BASE,
-      searchFilter: LDAP.SEARCH_FILTER,
+      searchFilter: `(${LDAP.LOGIN_ATTRIBUTE}={{username}})`,
     },
     usernameField: 'id',
     passwordField: 'password',
   };
   passport.use(new LdapStrategy(ldapOpts, (user, done) => {
     const loginUser = {
-      id: user.sAMAccountName,
+      id: user[LDAP.LOGIN_ATTRIBUTE],
       name: user.name,
       isAuth: true,
       isAdmin: NATIVE_MEMBER.includes(user.sAMAccountName),

@@ -21,7 +21,7 @@ function App(props) {
       <Container>
         <Switch>
           <UnauthenticatedRoute exact path="/" component={Login} props={{ isAuth: user.isAuth }} />
-          <AuthenticatedRoute path="/list" component={List} props={{ isAuth: user.isAuth }} />
+          <AuthenticatedRoute exact path="/list" component={List} props={{ isAuth: user.isAuth }} />
           <Route component={NotFound} />
         </Switch>
       </Container>

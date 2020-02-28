@@ -1,20 +1,22 @@
 const passport = require('passport');
-// const jwt = require('jsonwebtoken');
-const crypto = require('crypto-js');
 const { Router } = require('express');
-const config = require('../config');
+const { decryptPassword, generateToken } = require('../lib/user');
 
 const router = Router();
 
-function decryptPassword(req, res, next) {
-  const bytes = crypto.AES.decrypt(req.body.password, config.SECRET_KEY);
-  req.body.password = bytes.toString(crypto.enc.Utf8);
-  return next();
-}
-
-router.post('/login', decryptPassword, passport.authenticate('ldapauth', { session: false }), (req, res) => {
-  res.json(req.user);
-});
+router.post(
+  '/login',
+  decryptPassword,
+  passport.authenticate('ldapauth', { session: false }),
+  (req, res) => {
+    generateToken(req.user, (err, token) => {
+      if (err) {
+        return res.status(400).json({ message: err });
+      }
+      return res.json({ user: req.user, token });
+    });
+  },
+);
 // // FIXME 임시코드 제거
 // router.post('/dummyLogin', (req, res) => {
 //   jwt.sign(req.body, 'secret', { expiresIn: '60s' }, (err, token) => {

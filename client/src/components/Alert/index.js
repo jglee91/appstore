@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -11,42 +11,29 @@ import PropTypes from 'prop-types';
 
 export default function Alert(props) {
   const {
-    open: initOpen,
     title,
     content,
     buttonText,
-    onClick,
+    handleClose,
   } = props;
 
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    setOpen(initOpen);
-  }, []);
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-  const handleClick = () => {
-    setOpen(false);
-    onClick();
-  };
+  const [open, setOpen] = useState(true);
 
   return (
     <Dialog
       open={open}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-decription"
+      aria-describedby="alert-dialog-description"
     >
       <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-decription">
+        <DialogContentText id="alert-dialog-description">
           {content}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClick} color="primary">
+        <Button onClick={handleClose} color="primary">
           {buttonText}
         </Button>
       </DialogActions>
@@ -55,17 +42,15 @@ export default function Alert(props) {
 }
 
 Alert.propTypes = {
-  open: PropTypes.bool,
   title: PropTypes.string,
   content: PropTypes.string,
   buttonText: PropTypes.string,
-  onClick: PropTypes.func,
+  handleClose: PropTypes.func,
 };
 
 Alert.defaultProps = {
-  open: false,
   title: '알림',
   content: '',
   buttonText: '확인',
-  onClick: () => {},
+  handleClose: () => {},
 };
