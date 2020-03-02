@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import * as userActions from '../../modules/user';
 
 import LoadingButton from '../../components/LoadingButton';
-import Alert from '../../components/Alert';
+import Alert from '../../components/Dialog/Alert';
 
 const useStyles = makeStyles({
   root: {
@@ -22,7 +22,9 @@ function Login(props) {
   const [isIDError, setIsIDError] = useState(false);
   const [isPWDError, setIsPWDError] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
-  const [openAlert, setOpenAlert] = useState(false);
+  const [open, setOpen] = useState({
+    alert: false,
+  });
 
   const handleLogin = async () => {
     const id = loginForm.current.id.value.trim();
@@ -45,7 +47,7 @@ function Login(props) {
       await props.UserActions.fetchLogin({ id, password });
     } catch (err) {
       setIsAuthenticating(false);
-      setOpenAlert(true);
+      setOpen({ alert: true });
     }
   };
   const handleKeyDown = (e) => {
@@ -53,8 +55,8 @@ function Login(props) {
       handleLogin();
     }
   };
-  const handleAlertClose = () => {
-    setOpenAlert(false);
+  const handleOpen = (value) => {
+    setOpen({ alert: value });
   };
 
   return (
@@ -65,8 +67,7 @@ function Login(props) {
           label="ID"
           onKeyDown={handleKeyDown}
           error={isIDError}
-          placeholder="아이디를 입력해주세요."
-          helperText={isIDError ? '아이디를 확인해주세요.' : ' '}
+          helperText={isIDError ? 'Check your ID' : ' '}
         />
         <TextField
           type="password"
@@ -74,16 +75,19 @@ function Login(props) {
           label="Password"
           onKeyDown={handleKeyDown}
           error={isPWDError}
-          placeholder="비밀번호를 입력해주세요."
-          helperText={isPWDError ? '비밀번호를 확인해주세요.' : ' '}
+          helperText={isPWDError ? 'Check your password' : ' '}
         />
         <LoadingButton
           onClick={handleLogin}
-          text="로그인"
+          text="Login"
           loading={isAuthenticating}
         />
       </form>
-      {openAlert && <Alert content="로그인에 실패했습니다. 계정정보를 확인해주세요." handleClose={handleAlertClose} />}
+      <Alert
+        open={open.alert}
+        content="Fail to login. Check your account information."
+        onClose={() => handleOpen(false)}
+      />
     </Fragment>
   );
 }

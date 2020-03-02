@@ -16,27 +16,36 @@ export const fetchGetList = () => async (dispatch) => {
   const response = await axios.get(`${config.API_SERVER}/api/company`);
   dispatch(getList(response));
 };
-export const fetchAdd = () => async (dispatch) => {
-
+export const fetchAdd = (company) => async (dispatch) => {
+  const response = await axios.post(`${config.API_SERVER}/api/company`, company);
+  dispatch(add(response));
 };
-export const fetchModify = () => async (dispatch) => {
-
+export const fetchModify = (companyId, company) => async (dispatch) => {
+  const response = await axios.put(`${config.API_SERVER}/api/company/${companyId}`, company);
+  dispatch(modify(response));
 };
-export const fetchRemove = () => async (dispatch) => {
-
+export const fetchRemove = (companyId) => async (dispatch) => {
+  await axios.delete(`${config.API_SERVER}/api/company/${companyId}`);
+  dispatch(remove({ _id: companyId }));
 };
 
 export default handleActions({
-  [GET_LIST]: (state, action) => ({
-    company: [...state, ...action.payload.data],
-  }),
-  [ADD]: (state, action) => ({
-
-  }),
-  [MODIFY]: (state, action) => ({
-
-  }),
-  [REMOVE]: (state, action) => ({
-
-  }),
-}, {});
+  [GET_LIST]: (state, action) => (
+    action.payload.data
+  ),
+  [ADD]: (state, action) => (
+    [...state, action.payload.data]
+  ),
+  [MODIFY]: (state, action) => (
+    state.map((company) => {
+      if(company._id === action.payload.data._id) {
+        return { ...company, ...action.payload.data };
+      } else {
+        return company;
+      }
+    })
+  ),
+  [REMOVE]: (state, action) => (
+    state.filter((company) => company._id !== action.payload._id)
+  ),
+}, []);

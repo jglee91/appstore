@@ -31,6 +31,7 @@ mongoose.connect(config.DATABASE_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,
+  useFindAndModify: true,
 });
 app.use(httpMiddleware.notFound);
 app.use(httpMiddleware.errorHandler);

@@ -34,6 +34,15 @@ router.post('/', async (req, res, next) => {
     next(err);
   }
 });
+router.put('/:companyId', async (req, res, next) => {
+  try {
+    const id = req.params.companyId;
+    const updatedCompany = await Company.findByIdAndUpdate(id, req.body, { new: true });
+    res.json(updatedCompany);
+  } catch (err) {
+    next(err);
+  }
+});
 router.delete('/:companyId', async (req, res, next) => {
   try {
     const deletedCompany = await Company.findByIdAndDelete(req.params.companyId);

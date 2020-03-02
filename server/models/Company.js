@@ -11,7 +11,6 @@ const companySchema = new Schema({
     type: String,
     required: true,
     unique: 1,
-    uppercase: true,
   },
   creator: {
     type: String,
