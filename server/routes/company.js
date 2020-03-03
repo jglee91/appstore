@@ -11,18 +11,6 @@ router.get('/', async (req, res, next) => {
     next(err);
   }
 });
-router.get('/:companyId', async (req, res, next) => {
-  try {
-    const company = await Company.findById(req.params.companyId);
-    if (!company) {
-      res.status(404);
-      throw new Error('The company is not found.');
-    }
-    res.send(company);
-  } catch (err) {
-    next(err);
-  }
-});
 router.post('/', async (req, res, next) => {
   try {
     const company = await new Company(req.body).save();

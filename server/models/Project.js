@@ -18,12 +18,11 @@ const projectSchema = new Schema({
     uppercase: true,
   },
   serviceType: {
-    Type: String,
+    type: String,
     enum: ['b2b', 'b2c'],
   },
   svnUrl: {
     type: String,
-    required: true,
   },
   creator: {
     type: String,

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const projectSchema = new Schema({
+const applicationSchema = new Schema({
   project: {
     type: Schema.Types.ObjectId,
     ref: 'Project',
@@ -24,4 +24,4 @@ const projectSchema = new Schema({
   timestamps: true,
 });
 
-module.exports = mongoose.model('Project', projectSchema);
+module.exports = mongoose.model('Application', applicationSchema);

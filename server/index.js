@@ -23,8 +23,8 @@ app.use(cookieParser());
 // routers
 app.use('/api/user', require('./routes/user'));
 app.use('/api/company', require('./routes/company'));
-// app.use('/api/project', require('./routes/project'));
-// app.use('/api/application', require('./routes/application'));
+app.use('/api/project', require('./routes/project'));
+app.use('/api/application', require('./routes/application'));
 
 // middlewares
 mongoose.connect(config.DATABASE_URI, {

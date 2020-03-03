@@ -15,6 +15,8 @@ import Topbar from '../components/Topbar';
 import Login from './Login';
 import List from './List';
 import Company from './Company';
+import Application from './Application';
+import Project from './Project';
 import NotFound from './NotFound';
 
 const useStyles = makeStyles((theme) => ({
@@ -24,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function App(props) {
-  const { user } = props;
+  const { user, UserActions } = props;
   const { isAuth, isAdmin } = user;
   const classes = useStyles();
 
@@ -33,12 +35,12 @@ function App(props) {
   useEffect(() => {
     (async function auth() {
       try {
-        await props.UserActions.fetchAuth();
+        await UserActions.fetchAuth();
       } finally {
         setIsAuthenticating(false);
       }
     })();
-  }, []);
+  }, [UserActions]);
 
   return (
     !isAuthenticating && (
@@ -50,6 +52,8 @@ function App(props) {
             <UnauthenticatedRoute exact path="/" component={Login} props={{ isAuth }} />
             <AuthenticatedRoute exact path="/list" component={List} props={{ isAuth }} />
             <AuthenticatedRoute exact path="/company" component={Company} props={{ isAuth }} />
+            <AuthenticatedRoute exact path="/project" component={Project} props={{ isAuth }} />
+            <AuthenticatedRoute exact path="/application" component={Application} props={{ isAuth }} />
             <Route component={NotFound} />
           </Switch>
         </Container>

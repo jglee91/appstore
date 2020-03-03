@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { AppBar, Toolbar, Typography, IconButton, Button } from '@material-ui/core';
 import { Menu } from '@material-ui/icons';
@@ -18,6 +18,10 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
+  },
+  link: {
+    textDecoration: 'none',
+    color: '#ffffff',
   },
 }));
 
@@ -49,7 +53,7 @@ function TopBar(props) {
             </IconButton>
           )}
           <Typography variant="h6" className={classes.title}>
-            AppStore
+            <Link to="/list" className={classes.link}>AppStore</Link>
           </Typography>
           <Button color="inherit" onClick={handleLogout}>Logout</Button>
         </Toolbar>

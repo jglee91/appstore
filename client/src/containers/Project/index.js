@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import * as companyActions from '../../modules/company';
+import * as projectActions from '../../modules/project';
 
 import UpsertDialog from '../../components/Dialog/Upsert';
 import DeleteConfirm from '../../components/Dialog/Confirm';
@@ -48,8 +49,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function Company(props) {
-  const { user, company: companyList, CompanyActions } = props;
+function Project(props) {
+  const { user, company: companyList, project: projectList, CompanyActions, ProjectActions } = props;
   const classes = useStyles();
 
   const [isFetching, setIsFetching] = useState(true);
@@ -62,17 +63,18 @@ function Company(props) {
   });
   const [mode, setMode] = useState(null);
   const [content, setContent] = useState('');
-  const [target, setTarget] = useState({});
+  const [target, setTarget] = useState({ company: {} });
 
   useEffect(() => {
     (async function getList() {
       try {
         await CompanyActions.fetchGetList();
+        await ProjectActions.fetchGetList();
       } finally {
         setIsFetching(false);
       }
     })();
-  }, [CompanyActions]);
+  }, [ProjectActions]);
 
   const handleOpen = (key, value) => {
     setOpen({ ...open, [key]: value });
@@ -86,7 +88,7 @@ function Company(props) {
   };
   const handleInsert = async (data) => {
     try {
-      await CompanyActions.fetchAdd({ ...data, creator: user.id });
+      await ProjectActions.fetchAdd({ ...data, creator: user.id });
     } catch (err) {
       setContent(err.message);
       handleOpen('errorAlert', true);
@@ -94,7 +96,7 @@ function Company(props) {
   };
   const handleUpdate = async (data) => {
     try {
-      await CompanyActions.fetchModify(target._id, data);
+      await ProjectActions.fetchModify(target._id, data);
     } catch (err) {
       setContent(err.message);
       handleOpen('errorAlert', true);
@@ -102,7 +104,7 @@ function Company(props) {
   };
   const handleDelete = async () => {
     try {
-      await CompanyActions.fetchRemove(target._id);
+      await ProjectActions.fetchRemove(target._id);
     } catch (err) {
       setContent(err.message);
       handleOpen('errorAlert', true);
@@ -114,14 +116,14 @@ function Company(props) {
       <>
         <Paper className={classes.root}>
           <header className={classes.header}>
-            <Typography variant="h5">Company</Typography>
+            <Typography variant="h5">Project</Typography>
             <Button
               variant="contained"
               color="primary"
               startIcon={<CreateIcon />}
               onClick={() => {
                 setMode('Insert');
-                setTarget({});
+                setTarget({ company: {} });
                 handleOpen('upsertDialog', true);
               }}
             >
@@ -147,19 +149,20 @@ function Company(props) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {companyList && companyList.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map((company) => (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={company._id}>
-                    <TableCell>{company.name}</TableCell>
-                    <TableCell>{company.code}</TableCell>
-                    <TableCell>{company.creator}</TableCell>
-                    <TableCell>{moment(company.createdAt).format('YYYY-MM-DD')}</TableCell>
+                {projectList && projectList.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map((project) => (
+                  <TableRow hover role="checkbox" tabIndex={-1} key={project._id}>
+                    <TableCell>{project.name}</TableCell>
+                    <TableCell>{project.code}</TableCell>
+                    <TableCell>{project.creator}</TableCell>
+                    <TableCell>{moment(project.createdAt).format('YYYY-MM-DD')}</TableCell>
                     <TableCell>
                       <Tooltip title="Update">
                         <IconButton
                           aria-label="update"
                           onClick={() => {
-                            setTarget(company);
-                            handleOpen('updateDialog', true);
+                            setMode('Update');
+                            setTarget(project);
+                            handleOpen('upsertDialog', true);
                           }}
                         >
                           <CreateIcon />
@@ -169,7 +172,7 @@ function Company(props) {
                         <IconButton
                           aria-label="delete"
                           onClick={() => {
-                            setTarget(company);
+                            setTarget(project);
                             handleOpen('deleteConfirm', true);
                           }}
                         >
@@ -185,7 +188,7 @@ function Company(props) {
           <TablePagination
             rowsPerPageOptions={[5, 10, 20]}
             component="div"
-            count={companyList.length}
+            count={projectList.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onChangePage={handleChangePage}
@@ -196,8 +199,11 @@ function Company(props) {
           mode={mode}
           open={open.upsertDialog}
           contents={[
+            { type: 'select', label: 'Company', name: 'company', value: target.company._id, list: companyList.map((company) => ({ name: company.name, value: company._id })) },
             { type: 'text', label: 'Name', name: 'name', value: target.name },
             { type: 'text', label: 'Code', name: 'code', value: target.code },
+            { type: 'select', label: 'Service Type', name: 'serviceType', list: ['b2b', 'b2c'], value: target.serviceType },
+            { type: 'text', label: 'SVN URL', name: 'svnUrl', value: target.svnUrl },
           ]}
           onClose={() => handleOpen('upsertDialog', false)}
           onClick={(data) => {
@@ -213,7 +219,7 @@ function Company(props) {
         <DeleteConfirm
           open={open.deleteConfirm}
           title="Delete"
-          content="Are you sure to delete the company?"
+          content="Are you sure to delete the project?"
           onPositive={() => {
             handleOpen('deleteConfirm', false);
             handleDelete();
@@ -234,8 +240,10 @@ export default connect(
   (state) => ({
     user: state.user,
     company: state.company,
+    project: state.project,
   }),
   (dispatch) => ({
     CompanyActions: bindActionCreators(companyActions, dispatch),
+    ProjectActions: bindActionCreators(projectActions, dispatch),
   }),
-)(Company);
+)(Project);
